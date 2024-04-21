@@ -3,27 +3,35 @@ name: Docker image build and push
 on:
   push:
     branches: [ "main" ]
+
 jobs:
 
-  build-push:
-
+  checkout_and_build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Build Docker image
+        run: docker build -t ${{ github.event.repository.name }} .
+
+  security_scan:
+    runs-on: ubuntu-latest
+    needs: checkout_and_build
+    steps:
       - name: Install Trivy
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
 
-      - name: Build Docker image
-        run: docker build -t ${{ github.event.repository.name  }} .
-
       - name: Scan Docker image with Trivy
-        run: trivy --exit-code 1 --severity HIGH,CRITICAL ${{ github.event.repository.name  }}
+        run: trivy image ${{ github.event.repository.name }} --exit-code 1 --severity HIGH,CRITICAL
 
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: [checkout_and_build, security_scan]
+    steps:
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -36,5 +44,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name  }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name  }}:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
