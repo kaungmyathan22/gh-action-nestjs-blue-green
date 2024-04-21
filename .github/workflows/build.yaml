@@ -21,7 +21,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build -t backend .
-          docker tag backend:latest ${{ secrets.DOCKERHUB_USERNAME }}:backend-${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}:backend-${{ github.sha }}
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}:backend-${{ github.sha }} backend:latest
+          docker tag backend:latest ${{ secrets.DOCKERHUB_USERNAME }}/backend-${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend-${{ github.sha }}
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/backend-${{ github.sha }} backend:latest
           docker push backend:latest
