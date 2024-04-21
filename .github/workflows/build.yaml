@@ -20,9 +20,10 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          echo $DOCKER_USERNAME
-          docker build -t backend .
-          docker tag backend:latest $DOCKER_USERNAME/backend-${{ github.sha }}
-          docker push $DOCKER_USERNAME/backend-${{ github.sha }}
-          docker tag $DOCKER_USERNAME/backend-${{ github.sha }} backend:latest
-          docker push $DOCKER_USERNAME/backend:latest
+          echo "$DOCKER_USERNAME"
+          echo "${{env.DOCKER_USERNAME}}"
+          # docker build -t backend .
+          # docker tag backend:latest $DOCKER_USERNAME/backend-${{ github.sha }}
+          # docker push $DOCKER_USERNAME/backend-${{ github.sha }}
+          # docker tag $DOCKER_USERNAME/backend-${{ github.sha }} backend:latest
+          # docker push $DOCKER_USERNAME/backend:latest
