@@ -5,4 +5,7 @@ export class AppService {
   getHello(): string {
     return 'Mingalar par';
   }
+  ping() {
+    return { message: 'pong' };
+  }
 }
